@@ -26,7 +26,7 @@ declare global {
   }
 }
 
-function Scene({ texture, metalness, roughness }: { texture: THREE.Texture, metalness: number, roughness: number }) {
+function Scene({ texture, metalness, roughness, color }: { texture: THREE.Texture, metalness: number, roughness: number, color: string }) {
   const objRef = useRef<THREE.Group>(new THREE.Group());
   const obj = useLoader(OBJLoader, shaderBall);
 
@@ -36,6 +36,7 @@ function Scene({ texture, metalness, roughness }: { texture: THREE.Texture, meta
         if (child.isMesh) {
           child.material = new THREE.MeshStandardMaterial({
             map: texture,
+            color: color,
             roughness: roughness,
             metalness: metalness,
           });
@@ -90,13 +91,22 @@ function App() {
   const [texture, setTexture] = useState<THREE.Texture | null>(null);
   const [metalness, setMetalness] = useState(1);
   const [roughness, setRoughness] = useState(1);
+  const [color, setColor] = useState(new THREE.Color(0xffffff));
+
+  const colors = {
+    white: new THREE.Color(0xffffff),
+    red: new THREE.Color(0xff0000),
+    green: new THREE.Color(0x00ff00),
+    blue: new THREE.Color(0x0000ff),
+  }
 
   useEffect(() => {
     const loader = new THREE.TextureLoader();
     loader.load(selectedTexture, (loadedTexture) => {
       setTexture(loadedTexture);
     });
-  }, [selectedTexture]);
+
+  }, [selectedTexture, color]);
 
   return (
     <div style={{ width: 600, display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -110,6 +120,14 @@ function App() {
         }}>
           <option value='image1'>Texture 1</option>
           <option value='image2'>Texture 2</option>
+        </select>
+        <select onChange={(e) => {
+          setColor(colors[e.target.value]);
+        }}>
+          <option value='white'>White</option>
+          <option value='red'>Red</option>
+          <option value='green'>Green</option>
+          <option value='blue'>Blue</option>
         </select>
         <button onClick={() => texture && exportTexture(texture)}>
           Export Texture
@@ -145,7 +163,7 @@ function App() {
         border: '1px solid white',
       }}>
         <Canvas camera={{ position: [0, 0, 1000], fov: 20 }} >
-          {texture && <Scene texture={texture} metalness={metalness} roughness={roughness} />}
+          {texture && <Scene texture={texture} metalness={metalness} color={color} roughness={roughness} />}
           <Controls />
         </Canvas>
       </div>
