@@ -4,12 +4,7 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D with Three.js</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script
-      src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
-    <script
-      src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <title>3D with Three.js and React</title>
     <style>
       body,
       html {
@@ -18,71 +13,24 @@
         width: 100%;
         height: 100%;
         overflow: hidden;
+        height: 100dvh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: black;
       }
 
-      canvas {
-        display: block;
+      #root {
+        width: min(100%, 100vh);
+        height: 100%;
+        aspect-ratio: 1;
       }
-    </style>
-    }
     </style>
   </head>
 
   <body>
-    <script>
-      // Scene, Camera, Renderer
-      const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-      const renderer = new THREE.WebGLRenderer();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      document.body.appendChild(renderer.domElement);
-
-      // Load Texture
-      const textureLoader = new THREE.TextureLoader();
-      const texture = textureLoader.load('./textures/3.png');
-
-      // Load OBJ
-      const objLoader = new THREE.OBJLoader();
-      objLoader.load('./shaderBall.obj', function (object) {
-        object.traverse(function (child) {
-          if (child.isMesh) {
-            child.material = new THREE.MeshStandardMaterial({
-              map: texture,
-              roughness: 0.5
-            });
-            object.position.y = -1; // Adjust the position of the object
-            scene.add(object);
-          }
-        });
-        scene.add(object);
-      });
-
-      // Lighting
-      const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-      // Orbit Controls
-      const controls = new THREE.OrbitControls(camera, renderer.domElement);
-      controls.enableDamping = true;
-      controls.dampingFactor = 0.25;
-      controls.screenSpacePanning = false;
-      controls.maxPolarAngle = Math.PI / 2;
-      controls.update();
-      renderer.render(scene, camera);
-      // Camera Position
-
-      const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-      directionalLight.position.set(5, 10, 7.5);
-      scene.add(directionalLight);
-
-      // Camera Position
-      camera.position.z = 500;
-
-      // Animation Loop
-      function animate() {
-        requestAnimationFrame(animate);
-        renderer.render(scene, camera);
-      }
-      animate();
-    </script>
+    <div id="root"></div>
+    <script src="index.tsx" type="module"></script>
   </body>
 
 </html>
