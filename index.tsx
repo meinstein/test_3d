@@ -39,7 +39,7 @@ function Scene({ texture, metalness, roughness }: { texture: THREE.Texture, meta
             roughness: roughness,
             metalness: metalness,
           });
-          child.position.y = -1;
+          child.position.y = 1;
         }
       });
       objRef.current.add(obj);
@@ -59,7 +59,14 @@ function Controls() {
   const { camera, gl } = useThree();
   const controls = useRef<any>();
   useFrame(() => controls.current.update());
-  return <orbitControls ref={controls} args={[camera, gl.domElement]} enableDamping dampingFactor={0.25} maxPolarAngle={Math.PI / 2} />;
+
+  return <orbitControls
+    ref={controls}
+    args={[camera, gl.domElement]}
+    enableDamping
+    dampingFactor={0.25}
+    maxPolarAngle={Math.PI / 2}
+  />;
 }
 
 function exportTexture(texture: THREE.Texture) {
@@ -92,39 +99,57 @@ function App() {
   }, [selectedTexture]);
 
   return (
-    <>
-      <select onChange={(e) => {
-        if (e.target.value === 'image1') {
-          setSelectedTexture(image1);
-        } else {
-          setSelectedTexture(image2);
-        }
+    <div style={{ width: 600, display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+      <div style={{display: 'flex', gap: '1rem'}}>
+        <select onChange={(e) => {
+          if (e.target.value === 'image1') {
+            setSelectedTexture(image1);
+          } else {
+            setSelectedTexture(image2);
+          }
+        }}>
+          <option value='image1'>Texture 1</option>
+          <option value='image2'>Texture 2</option>
+        </select>
+        <button onClick={() => texture && exportTexture(texture)}>
+          Export Texture
+        </button>
+      </div>
+      <div style={{display: 'flex', gap: '1rem'}}>
+        <label style={{display: 'flex', alignItems: 'center'}}>
+          Metalness:
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.01"
+            value={metalness}
+            onChange={(e) => setMetalness(parseFloat(e.target.value))}
+          />
+        </label>
+        <label style={{display: 'flex', alignItems: 'center'}}>
+          Roughness:
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.01"
+            value={roughness}
+            onChange={(e) => setRoughness(parseFloat(e.target.value))}
+          />
+        </label>
+      </div>
+      <div style={{
+        width: '100%',
+        height: 600,
+        border: '1px solid white',
       }}>
-        <option value='image1'>Texture 1</option>
-        <option value='image2'>Texture 2</option>
-      </select>
-      <input
-        type="range"
-        min="0"
-        max="1"
-        step="0.01"
-        value={metalness}
-        onChange={(e) => setMetalness(parseFloat(e.target.value))}
-      />
-      <input
-        type="range"
-        min="0"
-        max="1"
-        step="0.01"
-        value={roughness}
-        onChange={(e) => setRoughness(parseFloat(e.target.value))}
-      />
-      <button onClick={() => texture && exportTexture(texture)}>Export Texture</button>
-      <Canvas camera={{ position: [0, 0, 1000], fov: 25 }}>
-        {texture && <Scene texture={texture} metalness={metalness} roughness={roughness} />}
-        <Controls />
-      </Canvas>
-    </>
+        <Canvas camera={{ position: [0, 0, 1000], fov: 20 }} >
+          {texture && <Scene texture={texture} metalness={metalness} roughness={roughness} />}
+          <Controls />
+        </Canvas>
+      </div>
+    </div>
   );
 }
 
